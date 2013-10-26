@@ -1,0 +1,27 @@
+{
+  "name": "sdk-node",
+  "version": "0.0.0",
+  "description": "Client for SlideRoom API",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "mocha --compilers coffee:coffee-script",
+    "testwatch": "mocha --watch --compilers coffee:coffee-script",
+    "prepublish": "coffee --compile --output lib src/*.coffee",
+    "postpublish": "rm -rf lib"
+  },
+  "repository": "",
+  "keywords": [
+    "slideroom"
+  ],
+  "author": "Derek Pittsinger",
+  "license": "BSD",
+  "devDependencies": {
+    "coffee-script": "~1.4.0",
+    "mocha": "~1.9.0"
+  },
+  "dependencies": {
+    "jshashes": "~1.0.4",
+    "underscore": "~1.5.2",
+    "request": "~2.27.0"
+  }
+}
