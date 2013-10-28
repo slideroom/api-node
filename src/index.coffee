@@ -68,7 +68,12 @@ class SlideRoomClient
 
 
   getRaw: (path, params = {}, cb) =>
-    request @buildUrl(path, params), (err, resp, body) =>
+    requestOptions =
+      url: @buildUrl(path, params)
+      headers:
+        "User-Agent": "SlideRoom Node.js client (0.0.1)"
+
+    request requestOptions, (err, resp, body) =>
       if err != null
         cb? err, null, null
         return
