@@ -1,6 +1,6 @@
 {
-  "name": "sdk-node",
-  "version": "0.0.0",
+  "name": "slideroom",
+  "version": "0.0.1",
   "description": "Client for SlideRoom API",
   "main": "lib/index.js",
   "scripts": {
