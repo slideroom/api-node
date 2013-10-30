@@ -1,3 +1,4 @@
+_ = require 'underscore'
 SlideRoomClient = require '../src/index'
 http = require 'http'
 
@@ -44,11 +45,19 @@ class TestServer extends EventEmitter
     "http://localhost:#{@port}"
 
 
-makeResponder = (str, code = 200, type = 'application/json') -> (req, res) ->
-  res.writeHead code,
-    'Content-Length': str.length
-    'Content-Type': type
-  res.end str
+# options = {
+#   body: ""
+#   code: 200 // status code
+#   type: "..." // defaults to application/json
+#   requestTester: ->
+# }
+makeResponder = (options) -> (req, res) ->
+  _.defaults options, { type: "application/json" }
+  options.requestTester? req
+  res.writeHead options.code,
+    'Content-Length': options.body.length
+    'Content-Type': options.type
+  res.end options.body
 
 
 getClient = (responder, cb) ->

@@ -7,12 +7,11 @@ signer = require '../src/signer'
 
 describe 'general responses', ->
   it 'should parse a good response', (done) ->
-    goodResponse = """
-    {
-      "test": "test"
-    }"""
+    options =
+      body: """{ "test": "test" }"""
+      code: 200
 
-    response = makeResponder goodResponse, 200
+    response = makeResponder options
     getClient response, (client, cleanUp) ->
       client.get "", {}, (err, resp, body) ->
         assert.equal err, null
@@ -27,12 +26,12 @@ describe 'general responses', ->
 
 
   testBadResponseCode = (code, done) ->
-    badResponse = """
-    {
-      "message": "test"
-    }"""
+    options =
+      body: """{ "message": "test" }"""
+      code: code
 
-    response = makeResponder badResponse, code
+    response = makeResponder options
+
     getClient response, (client, cleanUp) ->
       client.get "", {}, (err, resp, body) ->
         assert.notEqual err, null
@@ -55,11 +54,11 @@ describe 'general responses', ->
 
 
   it 'should not fail json parsing in error', (done) ->
-    badResponse = """
-    {
-      :dsf`"""
+    options =
+      body: """ { :dsf`"""
+      code: 400
 
-    response = makeResponder badResponse, 400
+    response = makeResponder options
     getClient response, (client, cleanUp) ->
       client.get "", {}, (err, resp, body) ->
         assert.notEqual err, null
