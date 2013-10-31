@@ -2,7 +2,7 @@
 
 # Example
 
-    var SlideRoomClient = require('slideroom-sdk');
+    var SlideRoomClient = require('slideroom');
 
     client = new SlideRoomClient({
       apiKey: "...",
@@ -37,14 +37,13 @@
 
 # Install
 
-    npm install slideroom-sdk
+    npm install slideroom
 
 # Documentation
 
-
 ## Create new client instance
 
-    var SlideRoomClient = require('slideroom-sdk')
+    var SlideRoomClient = require('slideroom');
     var client = new SlideRoomClient(opts);
 
 where ```opts``` is an object
