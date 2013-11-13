@@ -28,17 +28,23 @@ class TestServer extends EventEmitter
     @server = null
     @port = null
     @listening = false
+    @lastRequest = null
 
     newServer (s, port) =>
       @server = s
       @port = port
       @listening = true
 
-      @server.on 'request', responder
+      @server.on 'request', (req, res) =>
+        responder req, res
+        @lastRequest = req
+
       @emit 'listening'
 
 
   close: -> @server?.close()
+
+  cleanUp: -> @close()
 
   getUrl: ->
     return null if not @listening
@@ -49,18 +55,16 @@ class TestServer extends EventEmitter
 #   body: ""
 #   code: 200 // status code
 #   type: "..." // defaults to application/json
-#   requestTester: ->
 # }
 makeResponder = (options) -> (req, res) ->
   _.defaults options, { type: "application/json" }
-  options.requestTester? req
   res.writeHead options.code,
     'Content-Length': options.body.length
     'Content-Type': options.type
   res.end options.body
 
 
-getClient = (responder, cb) ->
+getClientAndServer = (responder, cb) ->
   server = new TestServer responder
 
   server.on "listening", ->
@@ -73,7 +77,7 @@ getClient = (responder, cb) ->
 
     cleanUp = -> server.close()
 
-    cb client, cleanUp
+    cb client, server
 
 
 
@@ -81,5 +85,5 @@ getClient = (responder, cb) ->
 exports[k] = v for k, v of {
   TestServer
   makeResponder
-  getClient
+  getClientAndServer
 }

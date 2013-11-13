@@ -2,7 +2,7 @@ _ = require 'underscore'
 url = require 'url'
 assert = require 'assert'
 
-{ getClient, makeResponder } = require './server'
+{ getClientAndServer, makeResponder } = require './server'
 
 
 describe 'export requests', ->
@@ -10,15 +10,17 @@ describe 'export requests', ->
     options =
       body: """{ "token": 123, "submissions": 456, "message": "message" }"""
       code: 202
-      requestTester: (req) ->
+
+    response = makeResponder options
+    getClientAndServer response, (client, server) ->
+      client.Export.request "test", "txt", null, (err, resp, body) ->
+        # test the request
+        req = server.lastRequest
         parsedQuery = url.parse(req.url, true).query
         assert.equal parsedQuery.export, "test"
         assert.equal parsedQuery.format, "txt"
         assert.ok not (_.has parsedQuery, "ss"), "should not contain query parameter 'ss'"
 
-    response = makeResponder options
-    getClient response, (client, cleanUp) ->
-      client.Export.request "test", "txt", null, (err, resp, body) ->
         assert.equal err, null
 
         expectedBody =
@@ -28,7 +30,7 @@ describe 'export requests', ->
 
         assert.deepEqual body, expectedBody
 
-        cleanUp()
+        server.cleanUp()
         done()
 
 
@@ -36,15 +38,17 @@ describe 'export requests', ->
     options =
       body: """{ "token": 123, "submissions": 456, "message": "message" }"""
       code: 202
-      requestTester: (req) ->
+
+    response = makeResponder options
+    getClientAndServer response, (client, server) ->
+      client.Export.request "test", "txt", "saved search", (err, resp, body) ->
+        # test the request
+        req = server.lastRequest
         parsedQuery = url.parse(req.url, true).query
         assert.equal parsedQuery.export, "test"
         assert.equal parsedQuery.format, "txt"
         assert.ok _.has(parsedQuery, "ss"), "should contain query parameter 'ss'"
 
-    response = makeResponder options
-    getClient response, (client, cleanUp) ->
-      client.Export.request "test", "txt", "saved search", (err, resp, body) ->
         assert.equal err, null
 
         expectedBody =
@@ -54,7 +58,7 @@ describe 'export requests', ->
 
         assert.deepEqual body, expectedBody
 
-        cleanUp()
+        server.cleanUp()
         done()
 
 
@@ -64,7 +68,7 @@ describe 'export requests', ->
       code: 400
 
     response = makeResponder options
-    getClient response, (client, cleanUp) ->
+    getClientAndServer response, (client, server) ->
       client.Export.request "test", "txt", null, (err, resp, body) ->
         assert.notEqual err, null
         assert.equal body, null
@@ -74,7 +78,7 @@ describe 'export requests', ->
 
         assert.deepEqual expectedError, err
 
-        cleanUp()
+        server.cleanUp()
         done()
 
 
@@ -83,13 +87,15 @@ describe 'export downloads', ->
     options =
       body: ""
       code: 202
-      requestTester: (req) ->
+
+    response = makeResponder options
+    getClientAndServer response, (client, server) ->
+      client.Export.download 123, (err, resp, body) ->
+        # test the request
+        req = server.lastRequest
         parsedQuery = url.parse(req.url, true).query
         assert.equal parsedQuery.token, "123"
 
-    response = makeResponder options
-    getClient response, (client, cleanUp) ->
-      client.Export.download 123, (err, resp, body) ->
         assert.equal err, null
 
         expectedBody =
@@ -97,7 +103,7 @@ describe 'export downloads', ->
 
         assert.deepEqual body, expectedBody
 
-        cleanUp()
+        server.cleanUp()
         done()
 
 
@@ -106,13 +112,15 @@ describe 'export downloads', ->
       body: "this,is,a,report"
       code: 200
       type: "text/plain"
-      requestTester: (req) ->
+
+    response = makeResponder options
+    getClientAndServer response, (client, server) ->
+      client.Export.download 123, (err, resp, body) ->
+        # test the request
+        req = server.lastRequest
         parsedQuery = url.parse(req.url, true).query
         assert.equal parsedQuery.token, "123"
 
-    response = makeResponder options
-    getClient response, (client, cleanUp) ->
-      client.Export.download 123, (err, resp, body) ->
         assert.equal err, null
 
         expectedBody =
@@ -121,7 +129,7 @@ describe 'export downloads', ->
 
         assert.deepEqual body, expectedBody
 
-        cleanUp()
+        server.cleanUp()
         done()
 
 
@@ -131,7 +139,7 @@ describe 'export downloads', ->
       code: 400
 
     response = makeResponder options
-    getClient response, (client, cleanUp) ->
+    getClientAndServer response, (client, server) ->
       client.Export.download 123, (err, resp, body) ->
         assert.notEqual err, null
         assert.equal body, null
@@ -141,6 +149,6 @@ describe 'export downloads', ->
 
         assert.deepEqual expectedError, err
 
-        cleanUp()
+        server.cleanUp()
         done()
 

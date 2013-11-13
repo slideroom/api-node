@@ -1,6 +1,6 @@
 assert = require 'assert'
 
-{ getClient, makeResponder } = require './server'
+{ getClientAndServer, makeResponder } = require './server'
 
 signer = require '../src/signer'
 
@@ -12,7 +12,7 @@ describe 'general responses', ->
       code: 200
 
     response = makeResponder options
-    getClient response, (client, cleanUp) ->
+    getClientAndServer response, (client, server) ->
       client.get "", {}, (err, resp, body) ->
         assert.equal err, null
 
@@ -21,7 +21,7 @@ describe 'general responses', ->
 
         assert.deepEqual body, expectedBody
 
-        cleanUp()
+        server.cleanUp()
         done()
 
 
@@ -32,7 +32,7 @@ describe 'general responses', ->
 
     response = makeResponder options
 
-    getClient response, (client, cleanUp) ->
+    getClientAndServer response, (client, server) ->
       client.get "", {}, (err, resp, body) ->
         assert.notEqual err, null
         assert.equal resp.statusCode, code
@@ -42,7 +42,7 @@ describe 'general responses', ->
 
         assert.deepEqual err, expectedError
 
-        cleanUp()
+        server.cleanUp()
         done()
 
 
@@ -59,12 +59,12 @@ describe 'general responses', ->
       code: 400
 
     response = makeResponder options
-    getClient response, (client, cleanUp) ->
+    getClientAndServer response, (client, server) ->
       client.get "", {}, (err, resp, body) ->
         assert.notEqual err, null
         assert.equal err, true
 
-        cleanUp()
+        server.cleanUp()
         done()
 
 
