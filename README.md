@@ -73,6 +73,10 @@ Find or build Custom Exports in Settings->Custom Exports
 
 ```err``` will not be ```null``` in the event that something went wrong. ```err.message``` will contain more information.
 
+### client.Export.request(exportName, fileFormat, savedSearchName, since, function(err, resp, requestObject) {})
+
+Same as above request, with an added since date parameter. ```since``` should be an instaceof Date
+
 ### client.Export.download(token, function(err, resp, downloadObject) {})
 
 After you recieve a token from a request you can check on the status and if it is ready, download the export.

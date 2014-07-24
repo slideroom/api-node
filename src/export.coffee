@@ -3,13 +3,19 @@ class Export
     @resourcePrefix = "export"
     
   # format should be: txt, csv, xlsx, tsv
-  request: (exportName, format = 'txt', savedSearch = null, cb) ->
+  request: (exportName, format = 'txt', savedSearch = null, since = null, cb) ->
     params =
       export: exportName
       format: format
 
+    if typeof(since) == "function"
+      cb = since
+
     if savedSearch?
       params.ss = savedSearch
+
+    if since instanceof Date
+      params.since = since.getTime()
 
     @client.get "#{@resourcePrefix}/request", params, cb
 

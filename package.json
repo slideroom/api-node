@@ -1,6 +1,6 @@
 {
   "name": "slideroom",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Client for the SlideRoom API",
   "main": "lib/index.js",
   "scripts": {

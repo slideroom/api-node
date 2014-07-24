@@ -20,6 +20,7 @@ describe 'export requests', ->
         assert.equal parsedQuery.export, "test"
         assert.equal parsedQuery.format, "txt"
         assert.ok not (_.has parsedQuery, "ss"), "should not contain query parameter 'ss'"
+        assert.ok not (_.has parsedQuery, "since"), "should not contain query parameter 'since'"
 
         assert.equal err, null
 
@@ -34,7 +35,7 @@ describe 'export requests', ->
         done()
 
 
-  it 'should return a successful download request (no saved search)', (done) ->
+  it 'should return a successful download request (with saved search)', (done) ->
     options =
       body: """{ "token": 123, "submissions": 456, "message": "message" }"""
       code: 202
@@ -48,6 +49,73 @@ describe 'export requests', ->
         assert.equal parsedQuery.export, "test"
         assert.equal parsedQuery.format, "txt"
         assert.ok _.has(parsedQuery, "ss"), "should contain query parameter 'ss'"
+        assert.equal parsedQuery.ss, "saved search"
+        assert.ok not (_.has parsedQuery, "since"), "should not contain query parameter 'since'"
+
+        assert.equal err, null
+
+        expectedBody =
+          token: 123
+          submissions: 456
+          message: "message"
+
+        assert.deepEqual body, expectedBody
+
+        server.cleanUp()
+        done()
+
+
+  it 'should return a successful download request with since (no saved search)', (done) ->
+    options =
+      body: """{ "token": 123, "submissions": 456, "message": "message" }"""
+      code: 202
+
+    date = new Date()
+
+    response = makeResponder options
+    getClientAndServer response, (client, server) ->
+      client.Export.request "test", "txt", null, date, (err, resp, body) ->
+        # test the request
+        req = server.lastRequest
+        parsedQuery = url.parse(req.url, true).query
+        assert.equal parsedQuery.export, "test"
+        assert.equal parsedQuery.format, "txt"
+        assert.ok not _.has(parsedQuery, "ss"), "should contain query parameter 'ss'"
+        assert.ok (_.has parsedQuery, "since"), "should contain query parameter 'since'"
+        assert.equal parsedQuery.since, "#{date.getTime()}"
+
+        assert.equal err, null
+
+        expectedBody =
+          token: 123
+          submissions: 456
+          message: "message"
+
+        assert.deepEqual body, expectedBody
+
+        server.cleanUp()
+        done()
+
+
+  it 'should return a successful download request with since (with saved search)', (done) ->
+    options =
+      body: """{ "token": 123, "submissions": 456, "message": "message" }"""
+      code: 202
+
+    date = new Date()
+
+    response = makeResponder options
+    getClientAndServer response, (client, server) ->
+      client.Export.request "test", "txt", "saved search", date, (err, resp, body) ->
+        # test the request
+        req = server.lastRequest
+        parsedQuery = url.parse(req.url, true).query
+        assert.equal parsedQuery.export, "test"
+        assert.equal parsedQuery.format, "txt"
+        assert.ok _.has(parsedQuery, "ss"), "should contain query parameter 'ss'"
+        assert.equal parsedQuery.ss, "saved search"
+        assert.ok _.has(parsedQuery, "since"), "should contain query parameter 'since'"
+        assert.equal parsedQuery.since, "#{date.getTime()}"
 
         assert.equal err, null
 
