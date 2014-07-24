@@ -2,7 +2,7 @@ class Export
   constructor: (@client) ->
     @resourcePrefix = "export"
     
-  # format should be: txt, csv, txt, tsv
+  # format should be: txt, csv, xlsx, tsv
   request: (exportName, format = 'txt', savedSearch = null, cb) ->
     params =
       export: exportName
